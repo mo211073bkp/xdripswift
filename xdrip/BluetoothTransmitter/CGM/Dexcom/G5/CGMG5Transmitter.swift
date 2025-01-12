@@ -190,6 +190,9 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
         //assign transmitterId
         self.transmitterId = transmitterID
         
+        // whilst we're at it, let's assign to userdefaults for the UI to use
+        UserDefaults.standard.activeSensorTransmitterId = transmitterID
+        
         // initalize transmitterStartDate
         self.transmitterStartDate = transmitterStartDate
         
@@ -286,7 +289,11 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
 
     override func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         
-        super.centralManager(central, didDisconnectPeripheral: peripheral, error: error)
+        let delayInSeconds = 2.0
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayInSeconds) {
+                super.centralManager(central, didDisconnectPeripheral: peripheral, error: error)
+        }
         
         if waitingPairingConfirmation {
             // device has requested a pairing request and is now in a status of verifying if pairing was successfull or not, this by doing setNotify to writeCharacteristic. If a disconnect occurs now, it means pairing has failed (probably because user didn't approve it
@@ -805,6 +812,16 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
         return .dexcom
     }
     
+    // for the G6, if the user has overriden the max days (for example when using an Anubis transmitter), we can return this value
+    // if not, return the standard maxSensorAgeInDays
+    func maxSensorAgeInDays() -> Double? {
+        if let activeSensorMaxSensorAgeInDaysOverridenAnubis = UserDefaults.standard.activeSensorMaxSensorAgeInDaysOverridenAnubis, activeSensorMaxSensorAgeInDaysOverridenAnubis > 0 {
+            return activeSensorMaxSensorAgeInDaysOverridenAnubis
+        } else {
+            return ConstantsDexcomG5.maxSensorAgeInDays
+        }
+    }
+    
     func overruleIsWebOOPEnabled() -> Bool {
         
         // dexcom transmitters can be calibrated, even if dexcom algorithm is used
@@ -1270,13 +1287,19 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
             // setting glucoseTxSent to true, because we received just glucose data
             // possibly a glucoseTx message (was sent by other app on the same device, so it's not necessary to send a new one
             glucoseTxSent = true
+            
+            var forceNewSensor = false
+            
+            if let sensorStartDate = self.sensorStartDate, let activeSensorStartDate = UserDefaults.standard.activeSensorStartDate, activeSensorStartDate < sensorStartDate.addingTimeInterval(-15.0) || activeSensorStartDate > sensorStartDate.addingTimeInterval(15.0) {
+                forceNewSensor = true
+            }
 
             // this is a valid sensor state, now it's time to process receivedSensorStartDate if it exists
             if let receivedSensorStartDate = receivedSensorStartDate {
                 
                 // if current sensorStartDate is < receivedSensorStartDate then it seems a new sensor
                 // adding an interval of 15 seconds, because sensorStartDate reported by transmitter can vary a second
-                if sensorStartDate == nil || (sensorStartDate! < receivedSensorStartDate.addingTimeInterval(-15.0)) {
+                if forceNewSensor || sensorStartDate == nil || (sensorStartDate! < receivedSensorStartDate.addingTimeInterval(-15.0)) {
                     
                     if let sensorStartDate = sensorStartDate {
                         trace("    Currently known sensorStartDate = %{public}@.", log: log, category: ConstantsLog.categoryCGMG5, type: .info, sensorStartDate.toString(timeStyle: .long, dateStyle: .long))
@@ -1297,11 +1320,48 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
                 sensorStartDate = receivedSensorStartDate
                 
                 // reset receivedSensorStartDate to nil
-                self.receivedSensorStartDate = nil
+                //self.receivedSensorStartDate = nil
                 
             }
             
             break
+            
+        case .SensorWarmup:
+            
+            var forceNewSensor = false
+            
+            if let sensorStartDate = self.sensorStartDate, let activeSensorStartDate = UserDefaults.standard.activeSensorStartDate, activeSensorStartDate < sensorStartDate.addingTimeInterval(-15.0) || activeSensorStartDate > sensorStartDate.addingTimeInterval(15.0) {
+                forceNewSensor = true
+            }
+            
+            // this is a valid sensor state, now it's time to process receivedSensorStartDate if it exists
+            if let receivedSensorStartDate = receivedSensorStartDate {
+                
+                // if current sensorStartDate is < receivedSensorStartDate then it seems a new sensor
+                // adding an interval of 15 seconds, because sensorStartDate reported by transmitter can vary a second
+                if forceNewSensor || sensorStartDate == nil || (sensorStartDate! < receivedSensorStartDate.addingTimeInterval(-15.0)) {
+                    
+                    if let sensorStartDate = sensorStartDate {
+                        trace("    Currently known sensorStartDate = %{public}@.", log: log, category: ConstantsLog.categoryCGMG5, type: .info, sensorStartDate.toString(timeStyle: .long, dateStyle: .long))
+                    } else {
+                        trace("    current sensorStartDate is nil", log: log, category: ConstantsLog.categoryCGMG5, type: .info)
+                    }
+                    trace("    received sensorStartDate minus 15 seconds = %{public}@.", log: log, category: ConstantsLog.categoryCGMG5, type: .info, receivedSensorStartDate.addingTimeInterval(-15.0).toString(timeStyle: .long, dateStyle: .long))
+                    
+                    trace("    Seems a new sensor is detected.", log: log, category: ConstantsLog.categoryCGMG5, type: .info)
+                    
+                    self.receivedSensorStartDate = receivedSensorStartDate
+                    
+                    cgmTransmitterDelegate?.newSensorDetected(sensorStartDate: receivedSensorStartDate)
+                    
+                }
+                
+                // assign sensorStartDate to receivedSensorStartDate
+                sensorStartDate = receivedSensorStartDate
+            }
+            
+            // for safety assign nil to lastGlucoseInSensorDataRxReading
+            lastGlucoseInSensorDataRxReading = nil
             
         case .SessionStopped:
             
@@ -1377,7 +1437,7 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
                 timeStampLastSensorStartTimeRead = Date()
                 
                 // if current sensorStartDate is < from receivedSensorStartDate then it seems a new sensor
-                if sensorStartDate == nil || (sensorStartDate! < receivedSensorStartDate.addingTimeInterval(-15.0)) {
+                if self.receivedSensorStartDate == nil || sensorStartDate == nil || (sensorStartDate! < receivedSensorStartDate.addingTimeInterval(-15.0)) {
                    
                     if let sensorStartDate = sensorStartDate {
                         trace("    Currently known sensorStartDate = %{public}@.", log: log, category: ConstantsLog.categoryCGMG5, type: .info, sensorStartDate.toString(timeStyle: .long, dateStyle: .long))
@@ -1389,7 +1449,6 @@ class CGMG5Transmitter:BluetoothTransmitter, CGMTransmitter {
                     trace("    Temporary storing the received SensorStartDate till a glucoseRx message is received with valid sensor status", log: log, category: ConstantsLog.categoryCGMG5, type: .info)
                     
                     self.receivedSensorStartDate = receivedSensorStartDate
-                    
                 }
                 
             } else {

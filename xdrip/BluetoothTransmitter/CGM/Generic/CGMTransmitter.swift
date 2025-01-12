@@ -42,7 +42,7 @@ protocol CGMTransmitter:AnyObject {
     
     /// maximum sensor age in days, nil if no maximum
     /// - default implementation returns nil
-    func maxSensorAgeInDays() -> Int?
+    func maxSensorAgeInDays() -> Double?
     
     /// to send a start sensor command to the transmitter
     /// - only useful for Dexcom - firefly type of transmitters, other transmitter types will have an empty implementation
@@ -82,7 +82,10 @@ enum CGMTransmitterType:String, CaseIterable {
     case dexcomG4 = "Dexcom G4"
     
     /// dexcom G5, G6
-    case dexcom = "Dexcom"
+    case dexcom = "Dexcom G5/G6/ONE"
+    
+    /// dexcom G7
+    case dexcomG7 = "Dexcom G7/ONE+/Stelo"
     
     /// miaomiao
     case miaomiao = "MiaoMiao"
@@ -116,7 +119,7 @@ enum CGMTransmitterType:String, CaseIterable {
         
         switch self {
             
-        case .dexcomG4, .dexcom:
+        case .dexcomG4, .dexcom, .dexcomG7:
             return .Dexcom
             
         case .miaomiao, .Bubble, .GNSentry, .Droplet1, .blueReader, .watlaa, .Blucon, .Libre2, .Atom:
@@ -167,6 +170,9 @@ enum CGMTransmitterType:String, CaseIterable {
         case .Atom:
             return true
             
+        case .dexcomG7:
+            return true
+            
         }
     }
     
@@ -182,7 +188,9 @@ enum CGMTransmitterType:String, CaseIterable {
             
         case .miaomiao, .Bubble, .Blucon, .Libre2, .Atom:
             return true
-        
+            
+        case .dexcomG7:
+            return false
         
         }
     }
@@ -224,6 +232,10 @@ enum CGMTransmitterType:String, CaseIterable {
         case .Atom:
             return ConstantsDefaultAlertLevels.defaultBatteryAlertLevelAtom
             
+        case .dexcomG7:
+            // we don't use this
+            return ConstantsDefaultAlertLevels.defaultBatteryAlertLevelDexcomG5
+            
         }
     }
     
@@ -238,7 +250,7 @@ enum CGMTransmitterType:String, CaseIterable {
             return ""
             
         case .dexcom:
-            return "voltA"
+            return "voltB"
             
         case .miaomiao, .Bubble, .Droplet1:
             return "%"
@@ -261,7 +273,67 @@ enum CGMTransmitterType:String, CaseIterable {
         case .Atom:
             return "%"
             
+        case .dexcomG7:
+            // we don't use this
+            return ""
+            
         }
+    }
+    
+    func detailedDescription() -> String {
+        
+        switch self {
+            /// dexcom G5, G6
+        case .dexcom:
+            
+            if let transmitterIdString = UserDefaults.standard.activeSensorTransmitterId {
+                
+                if transmitterIdString.startsWith("4") {
+                    
+                    return "Dexcom G5"
+                    
+                } else if transmitterIdString.startsWith("8") {
+                    
+                    return "Dexcom G6"
+                    
+                } else if transmitterIdString.startsWith("5") {
+                    
+                    return "Dexcom ONE"
+                    
+                } else if transmitterIdString.startsWith("C") {
+                    
+                    return "Dexcom ONE"
+                    
+                }
+                
+            }
+            
+            return "Dexcom"
+            
+        case .dexcomG7:
+            if let transmitterIdString = UserDefaults.standard.activeSensorTransmitterId {
+                if transmitterIdString.startsWith("DX01") {
+                    return "Dexcom Stelo"
+                } else if transmitterIdString.startsWith("DX02") {
+                    return "Dexcom ONE+"
+                } else {
+                    return "Dexcom G7"
+                }
+            }
+            return "Dexcom - please wait..."
+            
+        case .Libre2:
+            if let activeSensorMaxSensorAgeInDays = UserDefaults.standard.activeSensorMaxSensorAgeInDays, activeSensorMaxSensorAgeInDays >= 15 {
+                return "Libre 2 Plus EU"
+            } else {
+                return "Libre 2 EU"
+            }
+            
+        default:
+            return self.rawValue
+            
+        }
+        
     }
     
 }
@@ -287,7 +359,7 @@ extension CGMTransmitter {
     func requestNewReading() {}
 
     // default implementation, nil
-    func maxSensorAgeInDays() -> Int? {return nil}
+    func maxSensorAgeInDays() -> Double? {return nil}
     
     // default implementation, does nothing
     func startSensor(sensorCode: String?, startDate: Date) {}

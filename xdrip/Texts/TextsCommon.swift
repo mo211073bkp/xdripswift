@@ -30,7 +30,11 @@ class Texts_Common {
     }()
     
     static let password = {
-        return NSLocalizedString("common_password", tableName: filename, bundle: Bundle.main, value: "Password:", comment: "literally password")
+        return NSLocalizedString("common_password", tableName: filename, bundle: Bundle.main, value: "Password", comment: "literally password")
+    }()
+    
+    static let username = {
+        return NSLocalizedString("common_username", tableName: filename, bundle: Bundle.main, value: "Username", comment: "literally username")
     }()
     
     static let default0 = {
@@ -55,6 +59,10 @@ class Texts_Common {
     
     static let hours = {
         return NSLocalizedString("common_hours", tableName: filename, bundle: Bundle.main, value: "hours", comment: "literal translation needed")
+    }()
+    
+    static let minuteshort = {
+        return NSLocalizedString("common_minuteshort", tableName: filename, bundle: Bundle.main, value: "m", comment: "literal translation needed")
     }()
     
     static let minutes = {
@@ -182,6 +190,14 @@ class Texts_Common {
         return NSLocalizedString("common_statistics_inRange", tableName: filename, bundle: Bundle.main, value: "In Range", comment: "the words in range")
     }()
     
+    static let inTightRangeStatistics = {
+        return NSLocalizedString("common_statistics_inTightRange", tableName: filename, bundle: Bundle.main, value: "Tight Range", comment: "the words in tight range")
+    }()
+    
+    static let userRangeStatistics = {
+        return NSLocalizedString("common_statistics_userRange", tableName: filename, bundle: Bundle.main, value: "User Range", comment: "the words in user range")
+    }()
+    
     static let highStatistics = {
         return NSLocalizedString("common_statistics_high", tableName: filename, bundle: Bundle.main, value: "High", comment: "the word high")
     }()
@@ -200,5 +216,17 @@ class Texts_Common {
     
     static let dontShowAgain = {
         return NSLocalizedString("common_dontshowagain", tableName: filename, bundle: Bundle.main, value: "Don't Show Again", comment: "don't show again")
+    }()
+    
+    static let enabled = {
+        return NSLocalizedString("common_enabled", tableName: filename, bundle: Bundle.main, value: "Enabled", comment: "enabled")
+    }()
+    
+    static let disabled = {
+        return NSLocalizedString("common_disabled", tableName: filename, bundle: Bundle.main, value: "Disabled", comment: "disabled")
+    }()
+    
+    static let notRequired = {
+        return NSLocalizedString("common_notRequired", tableName: filename, bundle: Bundle.main, value: "Not required", comment: "not required")
     }()
 }

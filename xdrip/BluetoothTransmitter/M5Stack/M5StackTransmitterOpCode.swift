@@ -3,11 +3,11 @@ import Foundation
 /// opcodes for writing to M5Stack
 enum M5StackTransmitterOpCodeTx: UInt8, CaseIterable {
     
-    /// client writes nightScouturl
-    case writeNightScoutUrlTx = 0x01
+    /// client writes nightscouturl
+    case writeNightscoutUrlTx = 0x01
     
-    /// client writes nightScoutToken
-    case writeNightScoutAPIKeyTx = 0x02
+    /// client writes nightscoutToken
+    case writeNightscoutAPIKeyTx = 0x02
     
     /// client writes mgdl, value 0 means mmol is used, value 1 is mgdl
     case writemgdlTx = 0x03
@@ -99,6 +99,9 @@ enum M5StackTransmitterOpCodeRx: UInt8, CaseIterable {
     /// M5Stack sending battery level
     case readBatteryLevelRx = 0x20
 
+    /// received heartbeat
+    case heartbeat = 0x21
+
 }
 
 extension M5StackTransmitterOpCodeRx: CustomStringConvertible {
@@ -121,6 +124,8 @@ extension M5StackTransmitterOpCodeRx: CustomStringConvertible {
             return "readAllParametersRx"
         case .readBatteryLevelRx:
             return "readBatteryLevelRx"
+        case .heartbeat:
+            return "heartbeat"
         }
     }
 }

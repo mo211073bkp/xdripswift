@@ -41,8 +41,13 @@
 "invalidAccountOrPassword" = "Invalid account or password";
 "common_statistics_low" = "Low";
 "common_statistics_inRange" = "In Range";
+"common_statistics_inTightRange" = "Tight Range";
+"common_statistics_userRange" = "User Range";
 "common_statistics_high" = "High";
 "common_statistics_average" = "Average";
 "common_statistics_a1c" = "HbA1c";
 "common_statistics_cv" = "CV";
 "common_dontshowagain" = "Don't Show Again";
+"common_enabled" = "Enabled";
+"common_disabled" = "Disabled";
+"common_notRequired" = "Not required";

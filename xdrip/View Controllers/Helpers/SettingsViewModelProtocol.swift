@@ -12,6 +12,11 @@ protocol SettingsViewModelProtocol {
     /// the section title, optional, for section
     func sectionTitle() -> String?
     
+    /// what title should be shown in a section footer
+    /// - returns:
+    /// the section title, optional, for section
+    func sectionFooter() -> String?
+
     /// the text to be shown for a specific row in the Section
     /// - returns:
     ///     the text
@@ -51,13 +56,13 @@ protocol SettingsViewModelProtocol {
     
     /// does a change of the setting need a refresh of the complete settings screen yes or no
     ///
-    /// example switching from master to follower in the general settings, requires changing the UI for NightScout settings - in this case a complete refresh of all settings is needed
+    /// example switching from master to follower in the general settings, requires changing the UI for Nightscout settings - in this case a complete refresh of all settings is needed
     ///
     /// Goal is to minimize the refresh to the section if possible and to avoid refreshing the whole screen as much as possible.
     /// This function will verify if complete reload is needed or not
     func completeSettingsViewRefreshNeeded(index:Int) -> Bool
     
-    /// a view model may want to pass information back to the viewcontroller asynchronously. Example SettingsViewNightScoutSettingsViewModel will initiate a credential test. The response will come asynchronously and a text needs to return to the viewcontroller, to be shown to the user.
+    /// a view model may want to pass information back to the viewcontroller asynchronously. Example SettingsViewNightscoutSettingsViewModel will initiate a credential test. The response will come asynchronously and a text needs to return to the viewcontroller, to be shown to the user.
     ///
     /// The viewmodel must call the messageHandler on the main thread.
     /// - parameters:
@@ -79,6 +84,10 @@ protocol SettingsViewModelProtocol {
 // Add default implementations here so that ViewModels don't need to implement empty methods
 extension SettingsViewModelProtocol {
     func storeSectionReloadClosure(sectionReloadClosure: @escaping (() -> Void)) {}
+    
+    func sectionFooter() -> String? {
+        nil
+    }
 }
 
 /// to make the coding a bit easier, just one function defined for now, which is to get the viewModel for a specific setting

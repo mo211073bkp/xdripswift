@@ -20,7 +20,7 @@
 "notknown" = "Inconnu";
 "lastconnection" = "Dernière Connexion";
 "transmitterbatterylevel" = "Niveau de batterie (Transmitteur)";
-"ago" = "passée(s)";
+"ago" = "avant";
 "licenseinfo" = "This program is free software distributed under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.\r\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.\r\n\nSee http://www.gnu.org/licenses/gpl.txt for more details.\r\n\r\nInfo: ";
 "info" = "Informations";
 "transmitterinfo" = "Tout d'abord, allez sur l'écran Bluetooth où vous pourrez ajouter et scanner votre transmetteur.\r\n\nPuis revenir sur l'écran d'accueil pour démarrer le capteur.";
@@ -54,3 +54,31 @@
 "sensorend" = "Sensor Ends";
 
 "calibrationNotNecessary" = "Le menu calibrations manuelles n'est pas disponible si vous utilisez l'algorithme natif.\n\nPour calibrer vous pouvez passer à l'algorithme xDrip dans le menu de l'émetteur.";
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////   Translation needed - remove this header after translation                       /////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+/// nightscout is not enabled
+"nightscoutNotEnabled" = "Nightscout is disabled";
+
+/// After clicking scan button, this message will appear
+"hidingUrlForXSeconds" = "Hiding URL for %@s...";
+
+/// no sensor data is available
+"noSensorData" = "No sensor data";
+
+/// status info : literally 'Sensor Duration'
+"sensorDuration" = "Sensor Duration";
+
+/// nightscout is not enabled
+"nightscoutURLMissing" = "Nightscout URL missing";
+
+/// ask the user to disconnect and reconnect the sensor
+"reconnectLibreDataSource" = "Disconnect and reconnect Libre sensor";
+
+/// username and/or password is missing for librelinkup
+"libreLinkUpAccountCredentialsMissing" = "Username/password missing";
+
+/// no data source is enabled or connected
+"noDataSourceConnected" = "No CGM data source connected";

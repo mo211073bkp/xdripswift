@@ -12,7 +12,7 @@
 "scan" = "Scannen";
 
 /// cell text, where user can select to reset a transmitter at next connect. Only for Dexcom
-"resetRequired" = "Transmitter zurücksetzen?";
+"resetRequired" = "Transmitter zurücksetzen";
 
 /// text in status row, when not connected and app is not scanning
 "notTryingToConnect" = "Es wird nicht gescannt";
@@ -51,7 +51,7 @@
 "bootLoader" = "Bootloader";
 
 /// Bluetooth Peripheral view, when user clicks the trash button - this is not the complete sentence, it will be followed either by 'name' or 'alias', depending on the availability of an alias
-"confirmDeletionPeripheral" = "Möchten Sie das Gerät löschen?";
+"confirmDeletionPeripheral" = "Möchten Sie das Gerät löschen";
 
 /// text in status row, if scanning ongoing
 "scanning" = "Am scannen";
@@ -115,3 +115,24 @@
 "nfcErrorMessageScanErrorRetrying" = "Sensor Scan Fehler\n\nWiederhole!... # ";
 
 "nfcErrorMessageScanFailed" = "Sensor Scan gescheitert";
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////   Translation needed - remove this header after translation                       /////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+/// text to inform the user that multi-point calibration is an advanced option and could be dangerous if used incorrectly
+"nonFixedSlopeWarning" = "Multi-point calibration is an advanced feature.\n\nPlease do not use this feature until you have read the calibration section of the online help and understand how it works.";
+
+/// text in status row, when waiting for a successful NFC scan before starting bluetooth scanning
+"nfcScanNeeded" = "NFC scan needed";
+
+/// sensor warm-up text
+"warmingUpUntil" = "Warming up until";
+
+"nativeAlgorithm" = "Nativer Algorithmus";
+"xDripAlgorithm" = "xDrip Algorithmus";
+"confirmAlgorithmChangeToTransmitterMessage" = "Bitte um Bestätigung, dass zum  nativen/transmitter Algorithmus gewechselt werden soll";
+"confirmAlgorithmChangeToxDripMessage" = "itte um Bestätigung, dass zum xDrip Algorithmus gewechselt werden soll.\n\nDies stoppt für kurze Zeit die Datenübermittlung und Du wirst um einen initialen Kalibrierungswert (Blut) gebeten.";
+"confirmCalibrationChangeToSinglePointMessage" = "Bitte um Bestätigung, dass zur Standard Kalibrierung gewechselt werden soll.\n\nDies stoppt für kurze Zeit die Datenübermittlung und Du wirst um einen initialen Kalibrierungswert (Blut) gebeten.";
+"confirmCalibrationChangeToMultiPointMessage" = "Bitte um Bestätigung, dass zur Mehrpunkt Kalibrierung gewechselt werden soll.\n\n⚠️ Diese Methode ist nur  für erfahrene Benutzer, es könnte ein falscher und damit gefährlicher Wert angezeigt werden, wenn die Kalibrierung nicht korrekt durchgeführt wurde.\n\nWenn Du unsicher bist, bitte drücke Abbruch/Cancel.";
+"confirm" = "Bestätigen";

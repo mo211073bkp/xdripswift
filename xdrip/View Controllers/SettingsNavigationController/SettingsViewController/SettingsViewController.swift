@@ -29,20 +29,17 @@ final class SettingsViewController: UIViewController {
         /// help section - open help and offer translation
         case help
         
+        /// data source settings - master or follower - if follower, data source
+        case dataSource
+        
         ///General settings - language, glucose unit
         case general
         
         ///Home Screen settings - urgent high, high, target, low and urgent low values for guidelines
         case homescreen
         
-        /// treatments settings
-        case treatments
-        
         /// statistics settings
         case statistics
-        
-        /// sensor countdown settings
-        case sensorCountdown
         
         /// alarms
         case alarms
@@ -59,14 +56,20 @@ final class SettingsViewController: UIViewController {
         /// store bg values in healthkit
         case speak
         
-        /// M5 stack settings
-        case M5stack
-        
         /// Apple Watch settings
-        case AppleWatch
+        case appleWatch
+        
+        /// Calendar event settings
+        case calendarEvents
+        
+        /// contact Image settings
+        case contactImage
         
         /// housekeeper settings
-        case housekeeper
+        // case housekeeper // let's leave this out for now until an import function is added
+        
+        /// M5 stack settings
+        case M5stack
         
         /// tracing
         case trace
@@ -74,7 +77,7 @@ final class SettingsViewController: UIViewController {
         /// info
         case info
         
-        /// developper settings
+        /// developer settings
         case developer
         
         func viewModel(coreDataManager: CoreDataManager?) -> SettingsViewModelProtocol {
@@ -82,22 +85,20 @@ final class SettingsViewController: UIViewController {
                 
             case .help:
                 return SettingsViewHelpSettingsViewModel()
+            case .dataSource:
+                return SettingsViewDataSourceSettingsViewModel(coreDataManager: coreDataManager)
             case .general:
-                return SettingsViewGeneralSettingsViewModel(coreDataManager: coreDataManager)
+                return SettingsViewNotificationsSettingsViewModel()
             case .homescreen:
                 return SettingsViewHomeScreenSettingsViewModel()
-            case .treatments:
-                return SettingsViewTreatmentsSettingsViewModel()
             case .statistics:
                 return SettingsViewStatisticsSettingsViewModel()
-            case .sensorCountdown:
-                return SettingsViewSensorCountdownSettingsViewModel()
             case .alarms:
                 return SettingsViewAlertSettingsViewModel()
             case .nightscout:
-                return SettingsViewNightScoutSettingsViewModel()
+                return SettingsViewNightscoutSettingsViewModel()
             case .dexcom:
-                return SettingsViewDexcomSettingsViewModel()
+                return SettingsViewDexcomShareSettingsViewModel()
             case .healthkit:
                 return SettingsViewHealthKitSettingsViewModel()
             case .speak:
@@ -106,10 +107,14 @@ final class SettingsViewController: UIViewController {
                 return SettingsViewM5StackSettingsViewModel()
             case .developer:
                 return SettingsViewDevelopmentSettingsViewModel()
-            case .AppleWatch:
+            case .appleWatch:
                 return SettingsViewAppleWatchSettingsViewModel()
-            case .housekeeper:
-                return SettingsViewHousekeeperSettingsViewModel(coreDataManager: coreDataManager)
+            case .calendarEvents:
+                return SettingsViewCalendarEventsSettingsViewModel()
+            case .contactImage:
+                return SettingsViewContactImageSettingsViewModel()
+//            case .housekeeper:
+//                return SettingsViewHousekeeperSettingsViewModel(coreDataManager: coreDataManager)
             case .trace:
                 return SettingsViewTraceSettingsViewModel()
             case .info:
@@ -276,6 +281,12 @@ extension SettingsViewController:UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         return viewModels[section].sectionTitle()
+
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        
+        return viewModels[section].sectionFooter()
 
     }
     

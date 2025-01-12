@@ -17,13 +17,7 @@ fileprivate enum Setting:Int, CaseIterable {
     /// should the online help be  automatically translated?
     case translateOnlineHelp = 1
     
-    /// show the icon on the main screen?
-    case showHelpIcon = 2
-    
 }
-
-/// if the help icon switch is toggled, keep track of the fact so that the detail text can be modified
-private var showHelpIconToggled: Bool = false
 
 /// conforms to SettingsViewModelProtocol for all alert settings in the first sections screen
 struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
@@ -50,13 +44,11 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
         case .showOnlineHelp:
             
             // get the 2 character language code for the App Locale (i.e. "en", "es", "nl", "fr")
-            let languageCode = NSLocale.current.languageCode
-                
             // if the user has the app in a language other than English and they have the "auto translate" option selected, then load the help pages through Google Translate
             // important to check the the URLs actually exist in ConstansHomeView before trying to open them
-            if languageCode != ConstantsHomeView.onlineHelpBaseLocale && UserDefaults.standard.translateOnlineHelp {
+            if let languageCode = NSLocale.current.language.languageCode?.identifier, languageCode != ConstantsHomeView.onlineHelpBaseLocale && UserDefaults.standard.translateOnlineHelp {
                 
-                guard let url = URL(string: ConstantsHomeView.onlineHelpURLTranslated1 + languageCode! + ConstantsHomeView.onlineHelpURLTranslated2) else { return .nothing}
+                guard let url = URL(string: ConstantsHomeView.onlineHelpURLTranslated1 + languageCode + ConstantsHomeView.onlineHelpURLTranslated2) else { return .nothing }
                 
                 UIApplication.shared.open(url)
                 
@@ -66,12 +58,12 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
                 guard let url = URL(string: ConstantsHomeView.onlineHelpURL) else { return .nothing}
                 
                 UIApplication.shared.open(url)
-            
+                
             }
             
             return .nothing
             
-        case .translateOnlineHelp, .showHelpIcon:
+        case .translateOnlineHelp:
             
             return .nothing
             
@@ -81,7 +73,7 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
     func storeRowReloadClosure(rowReloadClosure: ((Int) -> Void)) {}
     
     func sectionTitle() -> String? {
-        return Texts_SettingsView.sectionTitleHelp
+        return ConstantsSettingsIcons.helpSettingsIcon + " " + Texts_SettingsView.sectionTitleHelp
     }
     
     func numberOfRows() -> Int {
@@ -89,27 +81,13 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
     }
     
     func uiView(index: Int) -> UIView? {
-        
         guard let setting = Setting(rawValue: index) else { fatalError("Unexpected Section") }
         
         switch setting {
-            
         case .showOnlineHelp:
             return nil
-            
         case .translateOnlineHelp:
-            
             return UISwitch(isOn: UserDefaults.standard.translateOnlineHelp, action: {(isOn:Bool) in UserDefaults.standard.translateOnlineHelp = isOn})
-            
-        case .showHelpIcon:
-            
-            return UISwitch(isOn: UserDefaults.standard.showHelpIcon, action: {(isOn:Bool) in
-                
-                // persist the fact that the option has been toggled so that we can then show a message stating that a restart is needed
-                showHelpIconToggled = true
-                UserDefaults.standard.showHelpIcon = isOn
-                
-            })
         }
     }
     
@@ -117,16 +95,10 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
         guard let setting = Setting(rawValue: index) else { fatalError("Unexpected Setting in SettingsHelpSettingsViewModel settingsRowText") }
         
         switch setting {
-            
         case .showOnlineHelp:
             return Texts_SettingsView.showOnlineHelp
-            
         case .translateOnlineHelp:
             return Texts_SettingsView.translateOnlineHelp
-            
-        case .showHelpIcon:
-            return Texts_SettingsView.showHelpIcon
-            
         }
     }
     
@@ -139,7 +111,7 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
         case .showOnlineHelp:
             return UITableViewCell.AccessoryType.disclosureIndicator
             
-        case .translateOnlineHelp, .showHelpIcon:
+        case .translateOnlineHelp:
             return UITableViewCell.AccessoryType.none
             
         }
@@ -153,9 +125,6 @@ struct SettingsViewHelpSettingsViewModel:SettingsViewModelProtocol {
         switch setting {
         case .showOnlineHelp, .translateOnlineHelp:
             return nil
-        case .showHelpIcon:
-            // if the user has asked to hide or show the help icon since opening the app then show a "restart needed" message
-            return showHelpIconToggled ? Texts_SettingsView.restartNeeded : nil
         }
     }
     
